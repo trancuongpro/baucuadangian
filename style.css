@@ -10,7 +10,6 @@ body, html {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    /* THÊM ẢNH NỀN TẠI ĐÂY */
     background: url('anhnen.png') no-repeat center center fixed;
     background-size: cover;
     font-family: sans-serif;
@@ -26,18 +25,15 @@ header { width: 100%; padding: 10px 0; text-align: center; }
 
 .container { flex: 1; width: 100%; max-width: 600px; display: flex; flex-direction: column; justify-content: space-evenly; padding: 10px; }
 
-.control-area {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    background: rgba(0, 0, 0, 0.4);
-    padding: 10px 15px;
-    border-radius: 15px;
-    gap: 15px;
+.control-area { 
+    display: flex; 
+    align-items: center; 
+    background: rgba(0, 0, 0, 0.4); 
+    padding: 10px 15px; 
+    border-radius: 15px; 
+    gap: 15px; 
     width: 100%;
 }
-
 .blink-msg { color: #fff; font-size: 0.85rem; font-weight: bold; text-align: center; flex: 1; animation: lightBlink 1s infinite; }
 
 .btn-green { background: linear-gradient(#28a745, #1e7e34); color: white; border: 2px solid #ffd700; padding: 12px 10px; border-radius: 10px; font-weight: bold; min-width: 100px; cursor: pointer; box-shadow: 0 4px 0 #145523; }
@@ -45,6 +41,16 @@ header { width: 100%; padding: 10px 0; text-align: center; }
 
 .dice-wrapper { display: flex; gap: 5px; min-width: 120px; justify-content: center; align-items: center; }
 .dice-result { width: 45px; height: 45px; background: #fff; border: 2px solid #ffd700; border-radius: 8px; object-fit: contain; }
+
+.spinning {
+    animation: diceSpin 0.1s linear infinite;
+    filter: blur(1px);
+}
+
+@keyframes diceSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 
 .gold-frame { border: 4px solid #ffd700; background-color: rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 8px; }
 .bet-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
@@ -58,8 +64,18 @@ header { width: 100%; padding: 10px 0; text-align: center; }
 .btn-minus { position: absolute; top: 5px; left: 5px; width: 28px; height: 28px; background: #ff0000; color: white; border: 2px solid white; border-radius: 50%; font-weight: bold; z-index: 20; display: none; cursor: pointer; }
 
 @keyframes lightBlink { 50% { opacity: 0.4; } }
-.win-effect { animation: winnerBlink 0.4s 5; border: 2px solid #ffd700 !important; }
-@keyframes winnerBlink { 0%, 100% { background: #fff; } 50% { background: #ffd700; } }
+
+/* THAY ĐỔI: Chớp liên tục (infinite) cho đến khi bị xóa class */
+.win-effect { 
+    animation: winnerBlink 0.5s infinite; 
+    border: 2px solid #ffd700 !important; 
+    z-index: 10;
+}
+
+@keyframes winnerBlink { 
+    0%, 100% { background: #fff; } 
+    50% { background: #ffd700; } 
+}
 
 #effect-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
 .flying-chip { position: absolute; width: 40px; height: 40px; transition: all 0.5s ease-out; z-index: 10000; }
