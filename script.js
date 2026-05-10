@@ -7,66 +7,42 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameOverModal = document.getElementById('gameOverModal');
     const btnReset = document.getElementById('btnReset');
     
-    // Khai báo âm thanh
+    document.addEventListener('contextmenu', (e) => { e.preventDefault(); }, false);
+
     const bgMusic = document.getElementById('bgMusic');
     const toggleMusic = document.getElementById('toggleMusic');
     const musicIcon = document.getElementById('musicIcon');
     let isMuted = false;
 
-    // Thiết lập âm lượng mặc định 30%
     bgMusic.volume = 0.3;
 
-    // Hàm để phát nhạc (vượt qua rào cản autoplay của trình duyệt)
-    function startMusic() {
-        if (!isMuted) {
-            bgMusic.play().catch(() => {
-                // Trình duyệt chặn autoplay, chờ tương tác đầu tiên
-                console.log("Chờ tương tác để phát nhạc...");
-            });
-        }
-    }
-
-    // Phát nhạc ngay khi có tương tác đầu tiên vào web
+    function startMusic() { if (!isMuted) { bgMusic.play().catch(() => {}); } }
     document.body.addEventListener('click', startMusic, { once: true });
 
-    // Xử lý bật/tắt nhạc khi nhấn vào loa
     toggleMusic.addEventListener('click', () => {
-        if (isMuted) {
-            bgMusic.play();
-            musicIcon.innerText = "🔊";
-            isMuted = false;
-        } else {
-            bgMusic.pause();
-            musicIcon.innerText = "🔇";
-            isMuted = true;
-        }
+        if (isMuted) { bgMusic.play(); musicIcon.innerText = "🔊"; isMuted = false; }
+        else { bgMusic.pause(); musicIcon.innerText = "🔇"; isMuted = true; }
     });
 
     const items = ['nai', 'bau', 'ga', 'ca', 'cua', 'tom'];
     let userBalance = parseInt(localStorage.getItem('bauCuaBalance')) || 100;
     let currentBets = { nai: 0, bau: 0, ga: 0, ca: 0, cua: 0, tom: 0 };
-    let isGamePlaying = false; 
-    
-    let gameStartTime = Date.now();
-    const TARGET_LOSE_TIME = 30 * 60 * 1000; 
+    let isGamePlaying = false;
 
     updateBalanceDisplay();
 
-    // Logic đặt cược
     document.querySelectorAll('.bet-slot').forEach(slot => {
         const name = slot.getAttribute('data-name');
         const icon = slot.querySelector('.bet-icon');
         const btnMinus = slot.querySelector('.btn-minus');
 
         icon.addEventListener('click', () => {
-            if (isGamePlaying || userBalance <= 0) return;
-            if (currentBets[name] >= 10) return;
+            if (isGamePlaying || userBalance <= 0 || currentBets[name] >= 10) return;
             playFlyEffect(icon);
             userBalance--;
             currentBets[name]++;
             updateSlotUI(name);
             updateBalanceDisplay();
-            statusMessage.innerText = "Mời Bạn Đặt Cược";
         });
 
         btnMinus.addEventListener('click', (e) => {
@@ -82,10 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btnAction.addEventListener('click', () => {
         if (!isGamePlaying) {
             const totalBet = Object.values(currentBets).reduce((a, b) => a + b, 0);
-            if (totalBet === 0) {
-                statusMessage.innerText = "Chưa cược sao khui được bạn ơi!";
-                return;
-            }
+            if (totalBet === 0) { statusMessage.innerText = "Đặt cược đã bạn ơi!"; return; }
             performRoll();
         } else {
             resetNewGame();
@@ -95,35 +68,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function performRoll() {
         diceWrapper.innerHTML = '';
         let results = [];
-        let currentTime = Date.now();
-        let timePlayed = currentTime - gameStartTime;
-        let difficulty = Math.min(timePlayed / TARGET_LOSE_TIME, 0.95); 
-        let nonBetItems = items.filter(item => currentBets[item] === 0);
-
-        let randType = Math.random() * 100;
-        let isTriple = randType < 1; 
-        let isDouble = randType >= 1 && randType < 6; 
-
-        let shouldForceLose = Math.random() < difficulty;
-
         for (let i = 0; i < 3; i++) {
-            if (shouldForceLose && nonBetItems.length > 0) {
-                results.push(nonBetItems[Math.floor(Math.random() * nonBetItems.length)]);
-            } else {
-                results.push(items[Math.floor(Math.random() * items.length)]);
-            }
+            results.push(items[Math.floor(Math.random() * items.length)]);
         }
-
-        if (isTriple) results = [results[0], results[0], results[0]];
-        if (isDouble) results = [results[0], results[0], results[1]];
-
         results.forEach(res => {
             const img = document.createElement('img');
             img.src = `${res}.png`;
             img.className = 'dice-result';
             diceWrapper.appendChild(img);
         });
-
         checkWinLoss(results);
         btnAction.innerText = "Ván Mới";
         isGamePlaying = true;
@@ -141,19 +94,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         userBalance += totalReceived;
         updateBalanceDisplay();
-        if (totalReceived > 0) {
-            statusMessage.innerText = `Thắng rồi! Nhận ${totalReceived} Chip.`;
-        } else {
-            statusMessage.innerText = "Không trúng rồi, chia buồn nhé!";
-            setTimeout(() => {
-                if (userBalance === 0) gameOverModal.style.display = 'flex';
-            }, 1200);
-        }
+        statusMessage.innerText = totalReceived > 0 ? `Thắng! Nhận ${totalReceived} Chip.` : "Tiếc quá, thua rồi!";
+        if (userBalance === 0) setTimeout(() => gameOverModal.style.display = 'flex', 1200);
     }
 
     btnReset.addEventListener('click', () => {
         userBalance = 100;
-        gameStartTime = Date.now(); 
         localStorage.setItem('bauCuaBalance', 100);
         updateBalanceDisplay();
         gameOverModal.style.display = 'none';
@@ -167,9 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
             slot.classList.remove('win-effect');
             updateSlotUI(slot.getAttribute('data-name'));
         });
-        diceWrapper.innerHTML = ''; 
+        diceWrapper.innerHTML = '';
         btnAction.innerText = "Mở Khui";
-        statusMessage.innerText = "Mời Bạn Đặt Cược Vào Trò Chơi";
+        statusMessage.innerText = "Mời Bạn Đặt Cược";
     }
 
     function updateSlotUI(name) {
@@ -189,9 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function updateBalanceDisplay() {
-        totalChipDisplay.innerText = userBalance;
-    }
+    function updateBalanceDisplay() { totalChipDisplay.innerText = userBalance; }
 
     function playFlyEffect(targetEl) {
         const chip = document.createElement('img');
@@ -206,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
             chip.style.left = (endRect.left + endRect.width/2 - 20) + 'px';
             chip.style.top = (endRect.top + endRect.height/2 - 20) + 'px';
             chip.style.opacity = '0';
-        }, 50);
-        setTimeout(() => chip.remove(), 600);
+        }, 10);
+        setTimeout(() => { if (chip.parentNode) chip.remove(); }, 600);
     }
 });
