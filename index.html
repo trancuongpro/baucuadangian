@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Bầu Cua Dân Gian</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1 class="blink-text">Trò Chơi Bầu Cua Dân Gian</h1>
+        <div class="user-balance">
+            Số Chip: <span id="totalChip">100</span> <img src="chip.png" class="mini-chip">
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="control-area">
+            <div class="btn-group">
+                <button id="btnAction" class="btn-green">Mở Khui</button>
+            </div>
+            
+            <div id="statusMessage" class="blink-msg">Mời Bạn Đặt Cược</div>
+
+            <div class="audio-ctrl" id="toggleMusic">
+                <span id="musicIcon">🔊</span>
+            </div>
+
+            <div id="diceWrapper" class="dice-wrapper"></div>
+        </div>
+
+        <div class="gold-frame">
+            <div class="bet-grid">
+                <div class="bet-slot" data-name="nai">
+                    <img src="nai.png" class="bet-icon">
+                    <div class="chip-container"></div>
+                    <span class="bet-count">0</span>
+                    <button class="btn-minus">-</button>
+                </div>
+                <div class="bet-slot" data-name="bau">
+                    <img src="bau.png" class="bet-icon">
+                    <div class="chip-container"></div>
+                    <span class="bet-count">0</span>
+                    <button class="btn-minus">-</button>
+                </div>
+                <div class="bet-slot" data-name="ga">
+                    <img src="ga.png" class="bet-icon">
+                    <div class="chip-container"></div>
+                    <span class="bet-count">0</span>
+                    <button class="btn-minus">-</button>
+                </div>
+                <div class="bet-slot" data-name="ca">
+                    <img src="ca.png" class="bet-icon">
+                    <div class="chip-container"></div>
+                    <span class="bet-count">0</span>
+                    <button class="btn-minus">-</button>
+                </div>
+                <div class="bet-slot" data-name="cua">
+                    <img src="cua.png" class="bet-icon">
+                    <div class="chip-container"></div>
+                    <span class="bet-count">0</span>
+                    <button class="btn-minus">-</button>
+                </div>
+                <div class="bet-slot" data-name="tom">
+                    <img src="tom.png" class="bet-icon">
+                    <div class="chip-container"></div>
+                    <span class="bet-count">0</span>
+                    <button class="btn-minus">-</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>Thiết Kế: Trần Cường - Zalo: 0907860662</footer>
+
+    <audio id="bgMusic" src="gamedangian.mp3" loop></audio>
+
+    <div id="gameOverModal" class="modal-overlay">
+        <div class="modal-content">
+            <p>Ồ Tiếc Thật Bạn Đã Thua Hết Tất Cả Số Chip Mà Hệ Thống Đã Cho . Không Có Gì Đâu Chúng Ta Chơi Lại Nhé</p>
+            <button id="btnReset">OK</button>
+        </div>
+    </div>
+
+    <div id="effect-layer"></div>
+    <script src="script.js"></script>
+</body>
+</html>
